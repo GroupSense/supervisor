@@ -1,19 +1,33 @@
+---
 driver:
-  name: vagrant
-  require_chef_omnibus: true
+  name: dokken
+  chef_version: latest
+  #use_sudo: false
+  privileged: true
+transport:
+  name: dokken
+provisioner:
+  name: dokken
 
-chef_versions:
-- 11
-- 12
+# provisioner:
+#   name: chef_zero
+#   # You may wish to disable always updating cookbooks in CI or other testing environments.
+#   # For example:
+#   #   always_update_cookbooks: <%= !ENV['CI'] %>
+#   always_update_cookbooks: true
+
+verifier:
+  name: inspec
 
 platforms:
-- name: ubuntu-12.04
-  run_list:
-  - recipe[apt]
-- name: ubuntu-10.04
-  run_list:
-    - recipe[apt]
-- name: centos-6.4
+  - name: ubuntu-16.04
+    driver:
+      image: ubuntu:16.04
+      pid_one_command: /sbin/init
+      intermediate_instructions:
+        - RUN /usr/bin/apt-get update
+        - RUN /usr/bin/apt-get install apt-transport-https net-tools -y
+
 
 suites:
 - name: default
